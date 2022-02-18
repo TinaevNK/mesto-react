@@ -1,17 +1,18 @@
 import React from 'react';
-import Footer from './Footer.js';
-import Header from './Header.js';
-import ImagePopup from './ImagePopup.js';
-import Main from './Main.js';
-import PopupWithForm from './PopupWithForm.js';
+import { useState } from 'react';
+import Footer from './Footer.jsx';
+import Header from './Header.jsx';
+import ImagePopup from './ImagePopup.jsx';
+import Main from './Main.jsx';
+import PopupWithForm from './PopupWithForm.jsx';
 
 function App() {
 
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState({name: '', link: ''});
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({});
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
 
   function handleEditProfileClick() {
@@ -30,7 +31,7 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
-    setSelectedCard({name: '', link: ''}); // можно было установить null но тогда бы в самом компоненте пришлось писать несколько раз одно и тоже условие сравнения, посчитал это более верным
+    setSelectedCard({});
     setIsDeletePopupOpen(false);
   }
 
@@ -45,12 +46,17 @@ function App() {
   return (
     <div className="page">
       <Header />
-      <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} onDeleteClick={handleDeleteClick} />
+      <Main
+        onEditProfile={handleEditProfileClick}
+        onAddPlace={handleAddPlaceClick}
+        onEditAvatar={handleEditAvatarClick}
+        onCardClick={handleCardClick}
+        onDeleteClick={handleDeleteClick} />
       <Footer />
 
       {/* попап редактирования профиля */}
 
-      <PopupWithForm name="edit" title="Редактировать профиль" submitText="Сохранить" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm name="edit" title="Редактировать профиль" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
         <fieldset className="popup__info">
           <label className="popup__label">
             <input type="text" placeholder="Имя" name="name" defaultValue="" id="name" minLength="2" maxLength="40" required className="popup__input" />
@@ -80,7 +86,7 @@ function App() {
 
       {/* попап обновления аватарки */}
 
-      <PopupWithForm name="avatar" title="Обновить аватар" submitText="Сохранить" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm name="avatar" title="Обновить аватар" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
         <fieldset className="popup__info">
           <label className="popup__label">
             <input type="url" placeholder="Ссылка на изображение" name="avatar" defaultValue="" id="avatar__link" required className="popup__input" />
@@ -101,7 +107,3 @@ function App() {
 }
 
 export default App;
-
-// в инпутах поменял value на defaultValue для скрытия ошибки в консоли. В дальнейшем уберу, надеюсь верное решение)
-// добавил также открытие/закрытие попапа удаления карточки (если пока не нужно - удалю)
-// ещё думал что можно убрать из html в папке public, но пока только фавикон заменил, остальное там не очень понял как работает
