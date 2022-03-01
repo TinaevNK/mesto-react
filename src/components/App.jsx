@@ -1,10 +1,12 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api.js';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
 import ImagePopup from './ImagePopup.jsx';
 import Main from './Main.jsx';
 import PopupWithForm from './PopupWithForm.jsx';
+import { currentUserContext } from '../contexts/CurrentUserContext.js';
+import avatar from '../images/avatar.png';
 
 function App() {
 
@@ -13,6 +15,15 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState({ name: 'Имя пользователя', about: 'О пользователе', avatar: avatar});
+
+  useEffect(() => {
+    api.getUserInfo()
+    .then(userInfo => {
+      setCurrentUser(userInfo)
+    })
+    .catch((err) => {console.log(err)})
+  })
 
 
   function handleEditProfileClick() {
@@ -45,63 +56,65 @@ function App() {
 
   return (
     <div className="page">
-      <Header />
-      <Main
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick}
-        onDeleteClick={handleDeleteClick} />
-      <Footer />
+      <currentUserContext.Provider value={currentUser}>
+        <Header />
+        <Main
+          onEditProfile={handleEditProfileClick}
+          onAddPlace={handleAddPlaceClick}
+          onEditAvatar={handleEditAvatarClick}
+          onCardClick={handleCardClick}
+          onDeleteClick={handleDeleteClick} />
+        <Footer />
 
-      {/* попап редактирования профиля */}
+        {/* попап редактирования профиля */}
 
-      <PopupWithForm name="edit" title="Редактировать профиль" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
-        <fieldset className="popup__info">
-          <label className="popup__label">
-            <input type="text" placeholder="Имя" name="name" defaultValue="" id="name" minLength="2" maxLength="40" required className="popup__input" />
-            <span className="popup__error" id="name-error"></span>
-          </label>
-          <label className="popup__label">
-            <input type="text" placeholder="О себе" name="about" defaultValue="" id="about" minLength="2" maxLength="200" required className="popup__input" />
-            <span className="popup__error" id="about-error"></span>
-          </label>
-        </fieldset>
-      </PopupWithForm>
+        <PopupWithForm name="edit" title="Редактировать профиль" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
+          <fieldset className="popup__info">
+            <label className="popup__label">
+              <input type="text" placeholder="Имя" name="name" defaultValue="" id="name" minLength="2" maxLength="40" required className="popup__input" />
+              <span className="popup__error" id="name-error"></span>
+            </label>
+            <label className="popup__label">
+              <input type="text" placeholder="О себе" name="about" defaultValue="" id="about" minLength="2" maxLength="200" required className="popup__input" />
+              <span className="popup__error" id="about-error"></span>
+            </label>
+          </fieldset>
+        </PopupWithForm>
 
-      {/* попап добавления карточки */}
+        {/* попап добавления карточки */}
 
-      <PopupWithForm name="create-card" title="Новое место" submitText="Создать" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
-        <fieldset className="popup__info">
-          <label className="popup__label">
-            <input type="text" placeholder="Название" name="name" defaultValue="" id="create-card__title" minLength="2" maxLength="30" required className="popup__input" />
-            <span className="popup__error" id="create-card__title-error"></span>
-          </label>
-          <label className="popup__label">
-            <input type="url" placeholder="Ссылка на картинку" name="link" defaultValue="" id="create-card__link" required className="popup__input" />
-            <span className="popup__error" id="create-card__link-error"></span>
-          </label>
-        </fieldset>
-      </PopupWithForm>
+        <PopupWithForm name="create-card" title="Новое место" submitText="Создать" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
+          <fieldset className="popup__info">
+            <label className="popup__label">
+              <input type="text" placeholder="Название" name="name" defaultValue="" id="create-card__title" minLength="2" maxLength="30" required className="popup__input" />
+              <span className="popup__error" id="create-card__title-error"></span>
+            </label>
+            <label className="popup__label">
+              <input type="url" placeholder="Ссылка на картинку" name="link" defaultValue="" id="create-card__link" required className="popup__input" />
+              <span className="popup__error" id="create-card__link-error"></span>
+            </label>
+          </fieldset>
+        </PopupWithForm>
 
-      {/* попап обновления аватарки */}
+        {/* попап обновления аватарки */}
 
-      <PopupWithForm name="avatar" title="Обновить аватар" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
-        <fieldset className="popup__info">
-          <label className="popup__label">
-            <input type="url" placeholder="Ссылка на изображение" name="avatar" defaultValue="" id="avatar__link" required className="popup__input" />
-            <span className="popup__error" id="avatar__link-error"></span>
-          </label>
-        </fieldset>
-      </PopupWithForm>
+        <PopupWithForm name="avatar" title="Обновить аватар" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
+          <fieldset className="popup__info">
+            <label className="popup__label">
+              <input type="url" placeholder="Ссылка на изображение" name="avatar" defaultValue="" id="avatar__link" required className="popup__input" />
+              <span className="popup__error" id="avatar__link-error"></span>
+            </label>
+          </fieldset>
+        </PopupWithForm>
 
-      {/* попап удаления карточки */}
+        {/* попап удаления карточки */}
 
-      <PopupWithForm name="delete-card" title="Вы уверены?" submitText="Да" isOpen={isDeletePopupOpen} onClose={closeAllPopups}/>
+        <PopupWithForm name="delete-card" title="Вы уверены?" submitText="Да" isOpen={isDeletePopupOpen} onClose={closeAllPopups}/>
 
-      {/* попап просмотра карточки */}
+        {/* попап просмотра карточки */}
 
-      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+      </currentUserContext.Provider>
     </div>
   );
 }

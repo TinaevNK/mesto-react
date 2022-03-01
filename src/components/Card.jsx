@@ -1,4 +1,15 @@
+import { currentUserContext } from '../contexts/CurrentUserContext.js';
+
 export default function Card({ data, onDeleteClick, onCardClick }) {
+  const currentUserData = useContext(currentUserContext); // подписываемся на контекст
+
+  // Определяем, являемся ли мы владельцем текущей карточки
+const isOwn = card.owner._id === currentUser._id;
+
+// Создаём переменную, которую после зададим в `className` для кнопки удаления
+const cardDeleteButtonClassName = (
+  `card__delete-button ${isOwn ? 'card__delete-button_visible' : 'card__delete-button_hidden'}`
+);
 
   function handleClick() {
     onCardClick(data);
