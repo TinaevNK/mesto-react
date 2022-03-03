@@ -9,21 +9,33 @@ import { currentUserContext } from '../contexts/CurrentUserContext.js';
 import avatar from '../images/avatar.png';
 
 function App() {
-
+  // стейты:
+  // открытие попапа редактирования профиля
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  // открытития попапа добавления карточек
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  // открытие попапа смены аватара
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  // открытие попапа карточки на полный экран
   const [selectedCard, setSelectedCard] = useState({});
+  // открытие попапа удаления карточки
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  // данные пользователя
   const [currentUser, setCurrentUser] = useState({ name: 'Имя пользователя', about: 'О пользователе', avatar: avatar});
+  // карточки
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
+    // рендер информации о пользователе
     api.getUserInfo()
-    .then(userInfo => {
-      setCurrentUser(userInfo)
-    })
-    .catch((err) => {console.log(err)})
-  })
+    .then(userInfo => { setCurrentUser(userInfo) })
+    .catch(err => { console.log(err) })
+
+    // рендер карточек
+    api.getInitialCards()
+    .then(cards => { setCards(cards) })
+    .catch(err => { console.log(err) })
+  }, [])
 
 
   function handleEditProfileClick() {
@@ -53,17 +65,38 @@ function App() {
   function handleDeleteClick() {
     setIsDeletePopupOpen(true);
   }
+  // функция постановки и снятия лайка
+  function handleCardLike(card) {
+    // Снова проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some(i => i._id === currentUser._id);
+
+    if (!isLiked) {
+      api.setLike(card)
+      .then(newCard => {
+        setCards(state => state.map(c => c._id === card._id ? newCard : c))
+      })
+      .catch(err => console.log(err))
+    } else {
+      api.deleteLike(card)
+      .then(newCard => {
+        setCards(state => state.map(c => c._id === card._id ? newCard : c))
+      })
+      .catch(err => console.log(err))
+    }
+  }
 
   return (
     <div className="page">
       <currentUserContext.Provider value={currentUser}>
         <Header />
         <Main
+          cards={cards}
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
-          onDeleteClick={handleDeleteClick} />
+          onDeleteClick={handleDeleteClick}
+          onCardLike={handleCardLike} />
         <Footer />
 
         {/* попап редактирования профиля */}
