@@ -4,6 +4,7 @@ import Footer from './Footer.jsx';
 import Header from './Header.jsx';
 import ImagePopup from './ImagePopup.jsx';
 import Main from './Main.jsx';
+import EditProfilePopup from './EditProfilePopup.jsx'
 import PopupWithForm from './PopupWithForm.jsx';
 import { currentUserContext } from '../contexts/CurrentUserContext.js';
 import avatar from '../images/avatar.png';
@@ -85,6 +86,14 @@ function App() {
     }
   }
 
+  // отправка данных пользователя на сервер
+  function handleUpdateUser(info) {
+    api.setUserInfo(info)
+      .then((newInfo) => { setCurrentUser(newInfo) })
+      .then(() => { closeAllPopups() })
+      .catch(err => console.log(err))
+  }
+
   return (
     <div className="page">
       <currentUserContext.Provider value={currentUser}>
@@ -101,18 +110,7 @@ function App() {
 
         {/* попап редактирования профиля */}
 
-        <PopupWithForm name="edit" title="Редактировать профиль" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
-          <fieldset className="popup__info">
-            <label className="popup__label">
-              <input type="text" placeholder="Имя" name="name" defaultValue="" id="name" minLength="2" maxLength="40" required className="popup__input" />
-              <span className="popup__error" id="name-error"></span>
-            </label>
-            <label className="popup__label">
-              <input type="text" placeholder="О себе" name="about" defaultValue="" id="about" minLength="2" maxLength="200" required className="popup__input" />
-              <span className="popup__error" id="about-error"></span>
-            </label>
-          </fieldset>
-        </PopupWithForm>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 
         {/* попап добавления карточки */}
 
