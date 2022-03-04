@@ -6,6 +6,7 @@ import ImagePopup from './ImagePopup.jsx';
 import Main from './Main.jsx';
 import EditProfilePopup from './EditProfilePopup.jsx'
 import PopupWithForm from './PopupWithForm.jsx';
+import EditAvatarPopup from './EditAvatarPopup.jsx';
 import { currentUserContext } from '../contexts/CurrentUserContext.js';
 import avatar from '../images/avatar.png';
 
@@ -89,9 +90,17 @@ function App() {
   // отправка данных пользователя на сервер
   function handleUpdateUser(info) {
     api.setUserInfo(info)
-      .then((newInfo) => { setCurrentUser(newInfo) })
-      .then(() => { closeAllPopups() })
-      .catch(err => console.log(err))
+    .then((newInfo) => { setCurrentUser(newInfo) })
+    .then(() => { closeAllPopups() })
+    .catch(err => console.log(err))
+  }
+
+  // отправка аватара пользователя на сервер
+  function handleUpdateAvatar(input) {
+    api.setUserAvatar(input)
+    .then(newInfo => { setCurrentUser(newInfo) })
+    .then(() => { closeAllPopups() })
+    .catch(err => console.log(err))
   }
 
   return (
@@ -129,14 +138,7 @@ function App() {
 
         {/* попап обновления аватарки */}
 
-        <PopupWithForm name="avatar" title="Обновить аватар" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
-          <fieldset className="popup__info">
-            <label className="popup__label">
-              <input type="url" placeholder="Ссылка на изображение" name="avatar" defaultValue="" id="avatar__link" required className="popup__input" />
-              <span className="popup__error" id="avatar__link-error"></span>
-            </label>
-          </fieldset>
-        </PopupWithForm>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
 
         {/* попап удаления карточки */}
 
