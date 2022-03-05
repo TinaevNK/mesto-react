@@ -76,6 +76,10 @@
 @import url(./blocks/popup/_opened/popup_opened.css);
 /* модификатор более сильного затемнения */
 @import url(./blocks/popup/_opasity-high/popup_opasity-high.css);
+/* модификатор для лоадера */
+@import url(./blocks/popup/_loader/popup_loader.css);
+/* лоадер */
+@import url(./blocks/popup/__loader/popup__loader.css);
 /* контейнер поп-апа */
 @import url(./blocks/popup/__container/popup__container.css);
 /* контейнер попапа для фото на весь экран */
