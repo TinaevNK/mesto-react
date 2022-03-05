@@ -10,6 +10,7 @@ import EditProfilePopup from './EditProfilePopup.jsx'
 import EditAvatarPopup from './EditAvatarPopup.jsx';
 import AddPlacePopup from './AddPlacePopup.jsx';
 import AcceptDeleteCardPopup from './AcceptDeleteCardPopup.jsx';
+import Loader from './Loader.jsx';
 
 function App() {
   // стейты:
@@ -29,6 +30,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState({ name: 'Имя пользователя', about: 'О пользователе', avatar: avatar});
   // карточки
   const [cards, setCards] = useState([]);
+  // лоадер
+  const [isLoader, setLoader] = React.useState(false);
 
   useEffect(() => {
     // рендер информации о пользователе
@@ -76,12 +79,14 @@ function App() {
 
   // ф-ция управляет удалением карточки
   function handleDeleteCard() {
+    setLoader(true);
     api.deleteCard(cardDelete)
       .then(() => {
         setCards((state) => state.filter(item => item._id !== cardDelete._id))
       })
       .then(() => closeAllPopups())
       .catch(err => console.log(err))
+      .finally(() => setLoader(false))
   }
 
   // функция постановки и снятия лайка
@@ -106,28 +111,34 @@ function App() {
 
   // отправка данных пользователя на сервер
   function handleUpdateUser(info) {
+    setLoader(true);
     api.setUserInfo(info)
     .then((newInfo) => { setCurrentUser(newInfo) })
     .then(() => { closeAllPopups() })
     .catch(err => console.log(err))
+    .finally(() => setLoader(false))
   }
 
   // отправка аватара пользователя на сервер
   function handleUpdateAvatar(input) {
+    setLoader(true);
     api.setUserAvatar(input)
     .then(newInfo => { setCurrentUser(newInfo) })
     .then(() => { closeAllPopups() })
     .catch(err => console.log(err))
+    .finally(() => setLoader(false))
   }
 
   // отправка новой карточки и обновление стейта
   function handleAddPlace(data) {
+    setLoader(true);
     api.addCard(data)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
       })
       .catch(err => console.log(err))
+      .finally(() => setLoader(false))
   }
 
   return (
@@ -162,6 +173,7 @@ function App() {
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups} />
+        <Loader isOpen={isLoader}/>
       </currentUserContext.Provider>
     </div>
   );
