@@ -13,7 +13,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   useEffect(() => {
     setName(currentUser.name);
     setDescription(currentUser.about);
-  }, [currentUser]);
+  }, [currentUser, isOpen]);
 
   function handleСhangeName(e) {
     setName(e.target.value)
@@ -38,11 +38,11 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
     <PopupWithForm name="edit" title="Редактировать профиль" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
       <fieldset className="popup__info">
         <label className="popup__label">
-          <input type="text" placeholder="Имя" name="name" value={name} id="name" minLength="2" maxLength="40" required className="popup__input" onChange={handleСhangeName}/>
+          <input type="text" placeholder="Имя" name="name" value={name || ''} id="name" minLength="2" maxLength="40" required className="popup__input" onChange={handleСhangeName}/>
           <span className="popup__error" id="name-error"></span>
         </label>
         <label className="popup__label">
-          <input type="text" placeholder="О себе" name="about" value={description} id="about" minLength="2" maxLength="200" required className="popup__input" onChange={handleСhangeDescription}/>
+          <input type="text" placeholder="О себе" name="about" value={description || ''} id="about" minLength="2" maxLength="200" required className="popup__input" onChange={handleСhangeDescription}/>
           <span className="popup__error" id="about-error"></span>
         </label>
       </fieldset>

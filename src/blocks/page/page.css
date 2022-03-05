@@ -5,3 +5,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
+
+.page:focus {
+  outline:none
+}
