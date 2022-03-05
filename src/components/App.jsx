@@ -7,9 +7,9 @@ import Header from './Header.jsx';
 import ImagePopup from './ImagePopup.jsx';
 import Main from './Main.jsx';
 import EditProfilePopup from './EditProfilePopup.jsx'
-import PopupWithForm from './PopupWithForm.jsx';
 import EditAvatarPopup from './EditAvatarPopup.jsx';
 import AddPlacePopup from './AddPlacePopup.jsx';
+import AcceptDeleteCardPopup from './AcceptDeleteCardPopup.jsx';
 
 function App() {
   // стейты:
@@ -23,6 +23,8 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({});
   // открытие попапа удаления карточки
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  // данные для удалённой карточки
+  const [cardDelete, isCardDelete] = useState({});
   // данные пользователя
   const [currentUser, setCurrentUser] = useState({ name: 'Имя пользователя', about: 'О пользователе', avatar: avatar});
   // карточки
@@ -61,13 +63,27 @@ function App() {
     setIsDeletePopupOpen(false);
   }
 
+  // функция открытия на полный экран картинки
   function handleCardClick(data) {
     setSelectedCard(data)
   }
 
-  function handleDeleteClick() {
+   // функция слушатель на клик по корзинке, чтобы открыть попап
+  function handleDeleteCardClick(data) {
+    isCardDelete(data)
     setIsDeletePopupOpen(true);
   }
+
+  // ф-ция управляет удалением карточки
+  function handleDeleteCard() {
+    api.deleteCard(cardDelete)
+      .then(() => {
+        setCards((state) => state.filter(item => item._id !== cardDelete._id))
+      })
+      .then(() => closeAllPopups())
+      .catch(err => console.log(err))
+  }
+
   // функция постановки и снятия лайка
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
@@ -124,7 +140,7 @@ function App() {
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
-          onCardDelete={handleDeleteClick}
+          onCardDelete={handleDeleteCardClick}
           onCardLike={handleCardLike} />
         <Footer />
         <EditProfilePopup
@@ -139,7 +155,10 @@ function App() {
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar} />
-        <PopupWithForm name="delete-card" title="Вы уверены?" submitText="Да" isOpen={isDeletePopupOpen} onClose={closeAllPopups}/>
+        <AcceptDeleteCardPopup
+          isOpen={isDeletePopupOpen}
+          onClose={closeAllPopups}
+          isAccept={handleDeleteCard} />
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups} />
