@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { currentUserContext } from '../contexts/CurrentUserContext.js';
+import avatar from '../images/avatar.png';
 import api from '../utils/api.js';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
@@ -7,8 +9,7 @@ import Main from './Main.jsx';
 import EditProfilePopup from './EditProfilePopup.jsx'
 import PopupWithForm from './PopupWithForm.jsx';
 import EditAvatarPopup from './EditAvatarPopup.jsx';
-import { currentUserContext } from '../contexts/CurrentUserContext.js';
-import avatar from '../images/avatar.png';
+import AddPlacePopup from './AddPlacePopup.jsx';
 
 function App() {
   // стейты:
@@ -103,6 +104,16 @@ function App() {
     .catch(err => console.log(err))
   }
 
+  // отправка новой карточки и обновление стейта
+  function handleAddPlace(data) {
+    api.addCard(data)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+        closeAllPopups();
+      })
+      .catch(err => console.log(err))
+  }
+
   return (
     <div className="page">
       <currentUserContext.Provider value={currentUser}>
@@ -113,40 +124,25 @@ function App() {
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
-          onDeleteClick={handleDeleteClick}
+          onCardDelete={handleDeleteClick}
           onCardLike={handleCardLike} />
         <Footer />
-
-        {/* попап редактирования профиля */}
-
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-
-        {/* попап добавления карточки */}
-
-        <PopupWithForm name="create-card" title="Новое место" submitText="Создать" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
-          <fieldset className="popup__info">
-            <label className="popup__label">
-              <input type="text" placeholder="Название" name="name" defaultValue="" id="create-card__title" minLength="2" maxLength="30" required className="popup__input" />
-              <span className="popup__error" id="create-card__title-error"></span>
-            </label>
-            <label className="popup__label">
-              <input type="url" placeholder="Ссылка на картинку" name="link" defaultValue="" id="create-card__link" required className="popup__input" />
-              <span className="popup__error" id="create-card__link-error"></span>
-            </label>
-          </fieldset>
-        </PopupWithForm>
-
-        {/* попап обновления аватарки */}
-
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-
-        {/* попап удаления карточки */}
-
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser} />
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlace} />
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar} />
         <PopupWithForm name="delete-card" title="Вы уверены?" submitText="Да" isOpen={isDeletePopupOpen} onClose={closeAllPopups}/>
-
-        {/* попап просмотра карточки */}
-
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup
+          card={selectedCard}
+          onClose={closeAllPopups} />
       </currentUserContext.Provider>
     </div>
   );
