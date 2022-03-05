@@ -21,9 +21,13 @@ export default function Card({ card, onCardDelete, onCardClick, onCardLike }) {
     onCardLike(card)
   }
 
+  function handleDeleteCard () {
+    onCardDelete(card)
+  }
+
   return(
     <li className="element">
-      {isOwn ? <button type="button" className='element__delete-button' onClick={onCardDelete}></button> : <></>}
+      {isOwn ? <button type="button" className='element__delete-button' onClick={handleDeleteCard}></button> : <></>}
       <img src={card.link} alt={card.name} className="element__photo" onClick={handleClick} />
       <div className="element__container">
         <h2 className="element__title">{card.name}</h2>
