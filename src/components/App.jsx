@@ -20,8 +20,10 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   // открытие попапа смены аватара
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  // открытие попапа карточки на полный экран
+  // данные карточки на полный экран
   const [selectedCard, setSelectedCard] = useState({});
+  // открытие попап карточки на весь экран
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
   // открытие попапа удаления карточки
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   // данные для удалённой карточки
@@ -34,17 +36,15 @@ function App() {
   const [isLoader, setLoader] = React.useState(false);
 
   useEffect(() => {
-    // рендер информации о пользователе
-    api.getUserInfo()
-    .then(userInfo => { setCurrentUser(userInfo) })
-    .catch(err => { console.log(err) })
-
-    // рендер карточек
-    api.getInitialCards()
-    .then(cards => { setCards(cards) })
-    .catch(err => { console.log(err) })
+    setLoader(true);
+    api.renderUserAndCards()
+    .then(([dataUserInfo, dataCards]) => {
+      setCurrentUser(dataUserInfo);
+      setCards(dataCards);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => setLoader(false))
   }, [])
-
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -62,12 +62,13 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
-    setSelectedCard({});
+    setIsImagePopupOpen(false);
     setIsDeletePopupOpen(false);
   }
 
   // функция открытия на полный экран картинки
   function handleCardClick(data) {
+    setIsImagePopupOpen(true);
     setSelectedCard(data)
   }
 
@@ -141,8 +142,14 @@ function App() {
       .finally(() => setLoader(false))
   }
 
+  function handleKeyDown(e) {
+    if (e.key === 'Escape') {
+      closeAllPopups()
+    }
+  }
+
   return (
-    <div className="page">
+    <div className="page" onKeyDown={handleKeyDown} tabIndex="0">
       <currentUserContext.Provider value={currentUser}>
         <Header />
         <Main
@@ -172,6 +179,7 @@ function App() {
           isAccept={handleDeleteCard} />
         <ImagePopup
           card={selectedCard}
+          isOpen={isImagePopupOpen}
           onClose={closeAllPopups} />
         <Loader isOpen={isLoader}/>
       </currentUserContext.Provider>
