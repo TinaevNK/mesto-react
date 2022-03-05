@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { currentUserContext } from '../contexts/CurrentUserContext.js';
 
-export default function Card({ card, onDeleteClick, onCardClick, onCardLike }) {
+export default function Card({ card, onCardDelete, onCardClick, onCardLike }) {
   const currentUser = useContext(currentUserContext); // подписываемся на контекст
 
   // Определяем, являемся ли мы владельцем текущей карточки
@@ -21,9 +21,13 @@ export default function Card({ card, onDeleteClick, onCardClick, onCardLike }) {
     onCardLike(card)
   }
 
+  function handleDeleteCard () {
+    onCardDelete(card)
+  }
+
   return(
     <li className="element">
-      {isOwn ? <button type="button" className='element__delete-button' onClick={onDeleteClick}></button> : <></>}
+      {isOwn ? <button type="button" className='element__delete-button' onClick={handleDeleteCard}></button> : <></>}
       <img src={card.link} alt={card.name} className="element__photo" onClick={handleClick} />
       <div className="element__container">
         <h2 className="element__title">{card.name}</h2>

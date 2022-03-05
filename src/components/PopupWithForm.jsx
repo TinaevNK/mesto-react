@@ -1,10 +1,15 @@
-export default function PopupWithForm({ name, title, isOpen, onClose, children, submitText="Сохранить" }) {
+export default function PopupWithForm({ name, title, isOpen, onClose, children, onSubmit, submitText="Сохранить" }) {
+  function handleClickOverlay(e) {
+    e.stopPropagation();
+  }
+
+  // не знаю на сколько корректное данное решение закрытия по оверлею, но оно работает...
 
   return(
-    <div id={`popup-${name}`} className={`popup ${isOpen && "popup_opened"}`}>
-      <div className="popup__container">
+    <div id={`popup-${name}`} className={`popup ${isOpen && "popup_opened"}`} onClick={onClose}>
+      <div className="popup__container" onClick={handleClickOverlay}>
         <h2 className="popup__title">{title}</h2>
-        <form id={`popup-${name}__form`} name={`${name}-popup`} noValidate className="popup__form">
+        <form id={`popup-${name}__form`} name={`${name}-popup`} noValidate className="popup__form" onSubmit={onSubmit}>
           {children}
           <button id={`popup-${name}__save-button`} type="submit" className="popup__save-button">
             {submitText}

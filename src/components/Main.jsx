@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import Card from './Card.jsx';
 import { currentUserContext } from '../contexts/CurrentUserContext.js';
 
-export default function Main({ cards, onEditAvatar, onEditProfile, onAddPlace, onCardClick, onDeleteClick, onCardLike }) {
+export default function Main({ cards, onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardDelete, onCardLike }) {
 
   const currentUser = useContext(currentUserContext); // подписываемся на контекст
 
@@ -21,7 +21,7 @@ export default function Main({ cards, onEditAvatar, onEditProfile, onAddPlace, o
         <ul className="elements__list">
           {cards.map(card => {
             return(
-              <Card key={card._id} card={card} onCardClick={onCardClick} onDeleteClick={onDeleteClick} onCardLike={onCardLike}/>
+              <Card key={card._id} card={card} onCardClick={onCardClick} onCardDelete={onCardDelete} onCardLike={onCardLike}/>
             );
           })}
         </ul>
