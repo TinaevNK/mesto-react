@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { currentUserContext } from '../contexts/CurrentUserContext.js';
 import avatar from '../images/avatar.png';
 import api from '../utils/api.js';
@@ -33,7 +33,7 @@ function App() {
   // карточки
   const [cards, setCards] = useState([]);
   // лоадер
-  const [isLoader, setLoader] = React.useState(false);
+  const [isLoader, setLoader] = useState(false);
 
   useEffect(() => {
     setLoader(true);
@@ -45,6 +45,24 @@ function App() {
     .catch((err) => console.log(err))
     .finally(() => setLoader(false))
   }, [])
+
+  function useEscapePress(callback, dependency) {
+    useEffect(() => {
+      if (dependency) {
+        const onEscClose = e => {
+          if (e.key === 'Escape') {
+            callback()
+          }
+        }
+        document.addEventListener('keyup', onEscClose);
+        // при размонтировании удалим обработчик данным колбэком
+        return () => {
+          document.removeEventListener('keyup', onEscClose)
+        };
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dependency])
+  }
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -142,14 +160,8 @@ function App() {
       .finally(() => setLoader(false))
   }
 
-  function handleKeyDown(e) {
-    if (e.key === 'Escape') {
-      closeAllPopups()
-    }
-  }
-
   return (
-    <div className="page" onKeyDown={handleKeyDown} tabIndex="0">
+    <div className="page">
       <currentUserContext.Provider value={currentUser}>
         <Header />
         <Main
@@ -161,27 +173,33 @@ function App() {
           onCardDelete={handleDeleteCardClick}
           onCardLike={handleCardLike} />
         <Footer />
+        <Loader
+          isOpen={isLoader} />
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser} />
+          onUpdateUser={handleUpdateUser}
+          useEscapePress={useEscapePress} />
         <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
-          onAddPlace={handleAddPlace} />
+          onAddPlace={handleAddPlace}
+          useEscapePress={useEscapePress} />
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-          onUpdateAvatar={handleUpdateAvatar} />
+          onUpdateAvatar={handleUpdateAvatar}
+          useEscapePress={useEscapePress} />
         <AcceptDeleteCardPopup
           isOpen={isDeletePopupOpen}
           onClose={closeAllPopups}
-          isAccept={handleDeleteCard} />
+          isAccept={handleDeleteCard}
+          useEscapePress={useEscapePress} />
         <ImagePopup
           card={selectedCard}
           isOpen={isImagePopupOpen}
-          onClose={closeAllPopups} />
-        <Loader isOpen={isLoader}/>
+          onClose={closeAllPopups}
+          useEscapePress={useEscapePress} />
       </currentUserContext.Provider>
     </div>
   );
